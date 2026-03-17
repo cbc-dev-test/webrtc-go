@@ -1,0 +1,63 @@
+name: sonar-explicit-workflow
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+on:
+  workflow_dispatch:
+permissions:
+  scm-token-own: read
+  scm-token-org: read
+  id-token: write
+jobs:
+  scan-and-evaluate:
+    steps:
+      - name: Checkout Source Code
+        uses: cloudbees-io/checkout@v1
+
+      - name: Run Sonar Scan
+        id: sonar-step
+        uses: cloudbees-io/sonarqube-plugin@v1.0.5
+        with:
+          url: ${{ vars.SONAR_URL }}
+          username: ${{ vars.SONAR_USERNAME }}
+          password: ${{ secrets.SONAR_PASSWORD }}
+          
+          
+      - id: print-outputs-from-sonar-step
+        name: Print Outputs From Upstream Sonar Step
+        uses: docker://alpine:latest
+        run: |
+          echo "Outputs from upstream Sonar step:"
+          echo "Critical count: ${{ steps.sonar-step.outputs.critical-count }}"
+          echo "Very high count: ${{ steps.sonar-step.outputs.very-high-count }}"
+          echo "High count: ${{ steps.sonar-step.outputs.high-count }}"
+          echo "Medium count: ${{ steps.sonar-step.outputs.medium-count }}"
+          echo "Low count: ${{ steps.sonar-step.outputs.low-count }}"
+      
+      # Transform sonar output to policy engine JSON
+      #   critical-count + very-high-count → CRITICAL
+      #   high-count → HIGH
+      #   medium-count → MEDIUM
+      - id: transform-input
+        name: Transform sonar output to policy input
+        uses: docker://alpine:latest
+        shell: sh
+        run: |
+          CRITICAL=$(( ${{ steps.sonar-step.outputs.critical-count }} + ${{ steps.sonar-step.outputs.very-high-count }} ))
+          HIGH=${{ steps.sonar-step.outputs.high-count }}
+          MEDIUM=${{ steps.sonar-step.outputs.medium-count }}
+          cat > /cloudbees/workspace/policy-input.json << EOF
+          {"vulnerabilities":{"counts":{"CRITICAL":${CRITICAL},"HIGH":${HIGH},"MEDIUM":${MEDIUM}}}}
+          EOF
+
+      - name: Print policy input
+        uses: docker://alpine:latest
+        shell: sh
+        run: |
+          cat /cloudbees/workspace/policy-input.json
+
+      - id: check-vulnerabilities
+        name: Check vulnerabilities
+        uses: calculi-corp/policy-service/actions/check-policy@poc-v0.1
+        with:
+          policy: vuln-gate
+          input-file: /cloudbees/workspace/policy-input.json
