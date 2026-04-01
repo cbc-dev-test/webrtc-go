@@ -64,7 +64,7 @@ jobs:
 
       - name: Run policy check
         id: policy-check
-        uses: cloudbees-io/policy-check@wip
+        uses: cloudbees-io/policy-check@dev
         with:
           policy: vuln-gate
           input-file: /cloudbees/workspace/policy-input.json
