@@ -55,9 +55,16 @@ jobs:
         run: |
           cat /cloudbees/workspace/policy-input.json
 
-      - id: check-vulnerabilities
-        name: Check vulnerabilities
-        uses: calculi-corp/policy-service/actions/check-policy@poc-v0.1
+      # - id: check-vulnerabilities
+      #   name: Check vulnerabilities
+      #   uses: calculi-corp/policy-service/actions/check-policy@poc-v0.1
+      #   with:
+      #     policy: vuln-gate
+      #     input-file: /cloudbees/workspace/policy-input.json
+
+      - name: Run policy check
+        id: policy-check
+        uses: cloudbees-io/policy-check@main
         with:
           policy: vuln-gate
           input-file: /cloudbees/workspace/policy-input.json
