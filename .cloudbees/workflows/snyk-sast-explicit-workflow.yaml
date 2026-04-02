@@ -1,0 +1,68 @@
+name: snyk-sast-explicit-workflow
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+on:
+  workflow_dispatch:
+permissions:
+  scm-token-own: read
+  scm-token-org: read
+  id-token: write
+jobs:
+  build:
+    steps:
+      - name: checkout-source-code
+        uses: cloudbees-io/checkout@v1
+
+      - name: Run Snyk SAST Scan
+        id: snyk-sast-step
+        uses: cloudbees-io/snyk-sast-plugin@v1
+        with:
+          snyk-token: ${{ secrets.SNYK_TOKEN }}
+          org-id: ${{ vars.SNYK_ORG_ID }}
+          
+      - id: print-outputs-from-snyk-sast-step
+        name: print outputs from upstream Snyk SAST step
+        uses: docker://alpine:latest
+        run: |
+          echo "Outputs from upstream Snyk SAST step:"
+          echo "Critical count: ${{ steps.snyk-sast-step.outputs.critical-count }}"
+          echo "Very high count: ${{ steps.snyk-sast-step.outputs.very-high-count }}"
+          echo "High count: ${{ steps.snyk-sast-step.outputs.high-count }}"
+          echo "Medium count: ${{ steps.snyk-sast-step.outputs.medium-count }}"
+          echo "Low count: ${{ steps.snyk-sast-step.outputs.low-count }}"
+
+      - id: transform-input
+        name: Transform snyk sast output to policy input
+        uses: docker://alpine:latest
+        shell: sh
+        run: |
+          CRITICAL=$(( ${{ steps.snyk-sast-step.outputs.critical-count }} + ${{ steps.snyk-sast-step.outputs.very-high-count }} ))
+          HIGH=${{ steps.snyk-sast-step.outputs.high-count }}
+          MEDIUM=${{ steps.snyk-sast-step.outputs.medium-count }}
+          cat > /cloudbees/workspace/policy-input.json << EOF
+          {"vulnerabilities":{"counts":{"CRITICAL":${CRITICAL},"HIGH":${HIGH},"MEDIUM":${MEDIUM}}}}
+          EOF
+
+      - name: Print policy input
+        uses: docker://alpine:latest
+        shell: sh
+        env:
+          ORG: ${{ cloudbees.org.id }}
+          ACCESS_KEY: ${{ cloudbees.api.token }}
+          URL: ${{ cloudbees.api.url }}
+        run: |
+          cat /cloudbees/workspace/policy-input.json
+
+      # - id: check-vulnerabilities
+      #   name: Check vulnerabilities
+      #   uses: calculi-corp/policy-service/actions/check-policy@poc-v0.1
+      #   with:
+      #     policy: vuln-gate
+      #     input-file: /cloudbees/workspace/policy-input.json
+
+      - name: Run policy check
+        id: policy-check
+        uses: cloudbees-io/policy-check@wip
+        with:
+          policy: vuln-gate
+          input-file: /cloudbees/workspace/policy-input.json
