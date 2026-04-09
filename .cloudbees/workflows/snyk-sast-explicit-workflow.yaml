@@ -64,5 +64,5 @@ jobs:
         id: policy-check
         uses: cloudbees-io/policy-check@wip
         with:
-          policy: vuln-gate
+          policy: 22f76106-3661-409f-b654-42ab4a052fe4
           input-file: /cloudbees/workspace/policy-input.json
