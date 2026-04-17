@@ -11,7 +11,10 @@ jobs:
   build:
     steps:
       - name: checkout-source-code
-        uses: cloudbees-io/checkout@v1
+        uses: cloudbees-io/checkout@v3
+        with:
+          repository: https://github.com/hkanakaraj/nodejs500
+          ref: main
 
       - name: Run Snyk SAST Scan
         id: snyk-sast-step
