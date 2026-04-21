@@ -37,7 +37,7 @@ jobs:
           ls -la "$CLOUDBEES_OUTPUTS"
 
           echo "=== Files in $CLOUDBEES_OUTPUTS ==="                                                                                                                              
-          find "/cloudbees" -type f | while read file; do                                                                                                               
+          find "/cloudbees/workspace" -type f | while read file; do                                                                                                               
             echo ""                                                                                                                                                               
             echo "File: $file"                                                                                                                                                    
             cat "$file"                                                                                                                                                           
