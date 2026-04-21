@@ -28,3 +28,14 @@ jobs:
           echo "Medium: ${{ steps.gosec-step.outputs.medium-count }}"
           echo "Low: ${{ steps.gosec-step.outputs.low-count }}"
           echo "Policy Subject: ${{ steps.gosec-step.outputs.policy-subject }}"
+      
+      - id: print-policy-subject
+        name: Print Policy subject
+        uses: docker://alpine:latest
+        run: |                                                                                                                                                                    
+          if [ -f "$CLOUDBEES_OUTPUTS/policy-subject" ]; then                                                                                                                     
+            echo "Policy subject content:"                                                                                                                                        
+            cat "$CLOUDBEES_OUTPUTS/policy-subject"                                                                                                                               
+          else                                                                                                                                                                    
+            echo "File not found"                                                                                                                                                 
+          fi 
