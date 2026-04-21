@@ -34,7 +34,16 @@ jobs:
         name: Print Policy subject
         uses: docker://alpine:latest
         run: |
-          ls -la "$CLOUDBEES_OUTPUTS"                                                                                                                                                                      
+          ls -la "$CLOUDBEES_OUTPUTS"
+
+          echo "=== Files in $CLOUDBEES_OUTPUTS ==="                                                                                                                              
+          find "$CLOUDBEES_OUTPUTS" -type f | while read file; do                                                                                                               
+            echo ""                                                                                                                                                               
+            echo "File: $file"                                                                                                                                                    
+            cat "$file"                                                                                                                                                           
+            echo "---"                                                                                                                                                            
+          done
+
           if [ -f "$CLOUDBEES_OUTPUTS/policy-subject" ]; then                                                                                                                     
             echo "Policy subject content:"                                                                                                                                        
             cat "$CLOUDBEES_OUTPUTS/policy-subject"                                                                                                                               
