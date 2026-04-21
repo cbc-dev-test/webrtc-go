@@ -33,7 +33,8 @@ jobs:
       - id: print-policy-subject
         name: Print Policy subject
         uses: docker://alpine:latest
-        run: |                                                                                                                                                                    
+        run: |
+          ls -la "$CLOUDBEES_OUTPUTS"                                                                                                                                                                      
           if [ -f "$CLOUDBEES_OUTPUTS/policy-subject" ]; then                                                                                                                     
             echo "Policy subject content:"                                                                                                                                        
             cat "$CLOUDBEES_OUTPUTS/policy-subject"                                                                                                                               
