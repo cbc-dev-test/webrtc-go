@@ -28,6 +28,7 @@ jobs:
           echo "Medium: ${{ steps.gosec-step.outputs.medium-count }}"
           echo "Low: ${{ steps.gosec-step.outputs.low-count }}"
           echo "Policy Subject: ${{ steps.gosec-step.outputs.policy-subject }}"
+          echo "CLOUDBEES_OUTPUTS directory: $CLOUDBEES_OUTPUTS"  
       
       - id: print-policy-subject
         name: Print Policy subject
