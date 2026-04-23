@@ -64,7 +64,7 @@ jobs:
 
       - name: Run policy check
         id: policy-check
-        uses: cloudbees-io/policy-check
+        uses: cloudbees-io/policy-check@evidence
         with:
           policy: 935f59c8-4b21-4051-81b4-0d83d280d60d
           input-file: /cloudbees/workspace/policy-input.json
