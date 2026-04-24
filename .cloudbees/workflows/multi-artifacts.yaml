@@ -13,13 +13,13 @@ jobs:
       - name: checkout-source-code
         uses: cloudbees-io/checkout@v1
         with: 
-          path: $CLOUDBEES_WORKSPACE + '/webrtc-repo'
+          path: "webrtc-repo"
 
       - name: Run Gosec Scan
         id: gosec-step
         uses: cloudbees-io/gosec-plugin@CBP-37635
         with:
-            workspace-dir: $CLOUDBEES_WORKSPACE + '/webrtc-repo'
+            workspace-dir: "webrtc-repo"
 
       - id: print-gosec-outputs
         name: Print gosec outputs
