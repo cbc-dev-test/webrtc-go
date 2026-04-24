@@ -17,7 +17,7 @@ jobs:
 
       - name: Run Gosec Scan
         id: gosec-step
-        uses: cloudbees-io/gosec-plugin@CBP-37635
+        uses: cloudbees-io/gosec-plugin@v1
         with:
             workspace-dir: "webrtc-repo"
 
@@ -32,10 +32,48 @@ jobs:
           echo "Medium: ${{ steps.gosec-step.outputs.medium-count }}"
           echo "Low: ${{ steps.gosec-step.outputs.low-count }}"
           echo "Policy Subject: ${{ steps.gosec-step.outputs.policy-subject }}"
-          echo "CLOUDBEES_OUTPUTS directory: $CLOUDBEES_OUTPUTS"  
-      
+          echo "CLOUDBEES_OUTPUTS directory: $CLOUDBEES_OUTPUTS"
+
       - id: print-policy-subject
         name: Print Policy subject
+        uses: docker://alpine:latest
+        run: |
+
+          echo "=== Files in $CLOUDBEES_OUTPUTS ==="                                                                                                                              
+          find "/cloudbees/workspace" -type f | while read file; do                                                                                                               
+            echo ""                                                                                                                                                               
+            echo "File: $file"                                                                                                                                                    
+            cat "$file"                                                                                                                                                           
+            echo "---"                                                                                                                                                            
+          done
+
+      - name: checkout-source-code-1
+        uses: cloudbees-io/checkout@v1
+        with:
+          repository: https://github.com/fintech-bank-1/gosec-count
+          path: gosec-count
+
+      - name: Run Gosec Scan 1
+        id: gosec-step-1
+        uses: cloudbees-io/gosec-plugin@v1
+        with:
+            workspace-dir: gosec-count
+
+      - id: print-gosec-outputs-1
+        name: Print gosec outputs 1
+        uses: docker://alpine:latest
+        run: |
+          echo "Gosec outputs:"
+          echo "Critical: ${{ steps.gosec-step-1.outputs.critical-count }}"
+          echo "Very high: ${{ steps.gosec-step-1.outputs.very-high-count }}"
+          echo "High: ${{ steps.gosec-step-1.outputs.high-count }}"
+          echo "Medium: ${{ steps.gosec-step-1.outputs.medium-count }}"
+          echo "Low: ${{ steps.gosec-step-1.outputs.low-count }}"
+          echo "Policy Subject: ${{ steps.gosec-step-1.outputs.policy-subject }}"
+          echo "CLOUDBEES_OUTPUTS directory: $CLOUDBEES_OUTPUTS"
+      
+      - id: print-policy-subject-1
+        name: Print Policy subject 1
         uses: docker://alpine:latest
         run: |
 
