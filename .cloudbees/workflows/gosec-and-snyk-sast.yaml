@@ -90,7 +90,9 @@ jobs:
         id: snyk-sast-step
         uses: cloudbees-io/snyk-sast-plugin@CBP-40852
         with:
-            workspace-dir: gosec-count
+          snyk-token: ${{ secrets.SNYK_TOKEN }}
+          org-id: ${{ vars.SNYK_ORG_ID }}
+          workspace-dir: gosec-count
 
       - id: print-snyk-sast-output
         name: Print gosec outputs 1
