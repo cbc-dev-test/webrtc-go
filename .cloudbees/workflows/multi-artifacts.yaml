@@ -42,6 +42,7 @@ jobs:
           repository: https://github.com/fintech-bank-1/gosec-count
           path: gosec-count
 
+      # For testing purpose use CBP-40852 branch
       - name: Run Gosec Scan 1
         id: gosec-step-1
         uses: cloudbees-io/gosec-plugin@CBP-40852
