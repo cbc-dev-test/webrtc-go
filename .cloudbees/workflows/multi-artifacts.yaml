@@ -33,20 +33,6 @@ jobs:
           echo "Medium: ${{ steps.gosec-step.outputs.medium-count }}"
           echo "Low: ${{ steps.gosec-step.outputs.low-count }}"
           echo "Policy Subject: ${{ steps.gosec-step.outputs.policy-subject }}"
-          echo "CLOUDBEES_OUTPUTS directory: $CLOUDBEES_OUTPUTS"
-
-      - id: print-policy-subject
-        name: Print Policy subject
-        uses: docker://alpine:latest
-        run: |
-
-          echo "=== Files in $CLOUDBEES_OUTPUTS ==="                                                                                                                              
-          find "/cloudbees/workspace" -type f | while read file; do                                                                                                               
-            echo ""                                                                                                                                                               
-            echo "File: $file"                                                                                                                                                    
-            cat "$file"                                                                                                                                                           
-            echo "---"                                                                                                                                                            
-          done
 
       - name: checkout-source-code-1
         uses: cloudbees-io/checkout@v2
@@ -71,15 +57,14 @@ jobs:
           echo "Medium: ${{ steps.gosec-step-1.outputs.medium-count }}"
           echo "Low: ${{ steps.gosec-step-1.outputs.low-count }}"
           echo "Policy Subject: ${{ steps.gosec-step-1.outputs.policy-subject }}"
-          echo "CLOUDBEES_OUTPUTS directory: $CLOUDBEES_OUTPUTS"
       
-      - id: print-policy-subject-1
-        name: Print Policy subject 1
+      - id: print-policy-subject
+        name: Print Policy subject
         uses: docker://alpine:latest
         run: |
 
-          echo "=== Files in $CLOUDBEES_OUTPUTS ==="                                                                                                                              
-          find "/cloudbees/workspace" -type f | while read file; do                                                                                                               
+          echo "=== Files in /cloudbees/workspace/policy-store ==="                                                                                                                              
+          find "/cloudbees/workspace/policy-store" -type f | while read file; do                                                                                                               
             echo ""                                                                                                                                                               
             echo "File: $file"                                                                                                                                                    
             cat "$file"                                                                                                                                                           
