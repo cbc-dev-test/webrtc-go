@@ -16,6 +16,7 @@ jobs:
           repository: https://github.com/Dev-Org-Hari/webrtc-go
           path: "webrtc-repo"
 
+      # For testing purpose use CBP-40852 branch
       - name: Run Gosec Scan
         id: gosec-step
         uses: cloudbees-io/gosec-plugin@CBP-40852
@@ -40,12 +41,14 @@ jobs:
           repository: https://github.com/fintech-bank-1/gosec-count
           path: gosec-count
 
+      # For testing purpose use CBP-40852 branch
       - name: Run Gosec Scan 1
         id: gosec-step-1
         uses: cloudbees-io/gosec-plugin@CBP-40852
         with:
             workspace-dir: gosec-count
 
+      # Printing output for testing purpose
       - id: print-gosec-outputs-1
         name: Print gosec outputs 1
         uses: docker://alpine:latest
@@ -58,6 +61,7 @@ jobs:
           echo "Low: ${{ steps.gosec-step-1.outputs.low-count }}"
           echo "Policy Subject: ${{ steps.gosec-step-1.outputs.policy-subject }}"
 
+      # For testing purpose use CBP-40852 branch
       - name: Run Snyk Sast
         id: snyk-sast-step
         uses: cloudbees-io/snyk-sast-plugin@CBP-40852
@@ -66,6 +70,7 @@ jobs:
           org-id: ${{ vars.SNYK_ORG_ID }}
           workspace-dir: gosec-count
 
+      # Printing output for testing purpose
       - id: print-snyk-sast-output
         name: Print Snyk sast outputs
         uses: docker://alpine:latest
@@ -78,6 +83,7 @@ jobs:
           echo "Low: ${{ steps.snyk-sast-step.outputs.low-count }}"
           echo "Policy Subject: ${{ steps.snyk-sast-step.outputs.policy-subject }}"
       
+      # Printing policy subject details for testing purpose
       - id: print-policy-subject
         name: Print Policy subject
         uses: docker://alpine:latest
