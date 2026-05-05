@@ -1,0 +1,52 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+name: snyk sca scanner
+on:
+  workflow_dispatch: {}
+permissions:
+  scm-token-own: read
+  scm-token-org: read
+  id-token: write
+jobs:
+  scan-and-evaluate:
+    steps:
+      - name: checkout-source-code
+        uses: cloudbees-io/checkout@v2
+        with:
+          repository: https://github.com/fintech-bank-1/gosec-count
+          path: gosec-count
+
+      - name: Run Snyk SCA
+        id: snyk-sca-step
+        uses: cloudbees-io/snyk-sca-plugin@v1
+        with:
+          snyk-token: ${{ secrets.SNYK_TOKEN }}
+          org-id: ${{ vars.SNYK_ORG_ID }}
+          workspace-dir: gosec-count
+
+      # Printing output for testing purpose
+      - id: print-snyk-sca-output
+        name: Print Snyk sca outputs
+        uses: docker://alpine:latest
+        run: |
+          echo "Snyk SCA outputs:"
+          echo "Critical: ${{ steps.snyk-sca-step.outputs.critical-count }}"
+          echo "Very high: ${{ steps.snyk-sca-step.outputs.very-high-count }}"
+          echo "High: ${{ steps.snyk-sca-step.outputs.high-count }}"
+          echo "Medium: ${{ steps.snyk-sca-step.outputs.medium-count }}"
+          echo "Low: ${{ steps.snyk-sca-step.outputs.low-count }}"
+          echo "Policy Subject: ${{ steps.snyk-sca-step.outputs.policy-subject }}"
+      
+      # Printing policy subject details for testing purpose
+      - id: print-policy-subject
+        name: Print Policy subject
+        uses: docker://alpine:latest
+        run: |
+
+          echo "=== Files in /cloudbees/workspace/policy-store ==="                                                                                                                              
+          find "/cloudbees/workspace/policy-store" -type f | while read file; do                                                                                                               
+            echo ""                                                                                                                                                               
+            echo "File: $file"                                                                                                                                                    
+            cat "$file"                                                                                                                                                           
+            echo "---"                                                                                                                                                            
+          done
