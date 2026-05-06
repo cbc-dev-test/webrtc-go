@@ -75,10 +75,10 @@ jobs:
           echo "$ORG"
           echo "Authorization: Bearer $ACCESS_KEY"
           cat /cloudbees/workspace/policy-input.json
-
-      - name: Run policy check
-        id: policy-check
-        uses: cloudbees-io/policy-check@CBP-42797
-        with:
-          policy: 935f59c8-4b21-4051-81b4-0d83d280d60d
-          input-file: /cloudbees/workspace/policy-input.json
+  policy-evaluation:
+    uses: cloudbees-io/policy-check/workflow.yml@CBP-42797
+    needs:
+      - scan-and-evaluate
+    with:
+      policy-id: 935f59c8-4b21-4051-81b4-0d83d280d60d
+      input-file: /cloudbees/workspace/policy-input.json
