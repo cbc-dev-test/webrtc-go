@@ -16,20 +16,6 @@ jobs:
           repository: https://github.com/cbp-trivy-explicit-scan/trivy-go-dockerImage-scan
           path: dockerImage
 
-      - id: print-cloudbees-workspace
-        name: Print workspace file
-        uses: docker://alpine:latest
-        run: |
-
-          echo "=== Files in /cloudbees/workspace/dockerImage ==="                                                                                                                              
-          find "/cloudbees/workspace/dockerImage" -type f | while read file; do                                                                                                               
-            echo ""                                                                                                                                                               
-            echo "File: $file"                                                                                                                                                    
-            # cat "$file"                                                                                                                                                           
-            echo "---"                                                                                                                                                            
-          done
-
-
       - id: jfrog-actions-workflow-upload
         name: jfrog actions workflow upload
         uses: cloudbees-io/jfrog-artifactory-upload-file@v1
