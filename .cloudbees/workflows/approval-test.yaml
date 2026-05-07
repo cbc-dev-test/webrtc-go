@@ -72,11 +72,12 @@ jobs:
           ORG: ${{ cloudbees.org.id }}
           ACCESS_KEY: ${{ cloudbees.api.token }}
           URL: ${{ cloudbees.api.url }}
+          POLICY_SUBJECT: ${{ steps.transform-input.outputs.policy-subject }}
         run: |
           echo "$URL"
           echo "$ORG"
           echo "Authorization: Bearer $ACCESS_KEY"
-          cat /cloudbees/workspace/policy-input.json
+          echo "$POLICY_SUBJECT"
   policy-evaluation:
     uses: cloudbees-io/policy-check/workflow.yml@CBP-42797
     needs:
