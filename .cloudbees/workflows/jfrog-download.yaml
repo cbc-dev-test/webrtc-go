@@ -16,7 +16,7 @@ jobs:
           url: ${{ vars.JFROG_URL }}
           username: ${{ vars.JFROG_ACTIONS_USERNAME }}
           password: ${{ secrets.JFROG_ACTIONS_PASSWORD }}
-          file-path: /cloudbees/workspace/jfrogtest/golang-alpine.tar
+          file-path: /cloudbees/workspace/golang-alpine.tar
           artifactory-path: test-generic-repo/jfrogtest/golang-alpine.tar
 
       # Printing policy subject details for testing purpose
@@ -25,8 +25,8 @@ jobs:
         uses: docker://alpine:latest
         run: |
 
-          echo "=== Files in /cloudbees/workspace/jfrogtest ==="                                                                                                                              
-          find "/cloudbees/workspace/jfrogtest" -type f | while read file; do                                                                                                               
+          echo "=== Files in /cloudbees/workspace ==="                                                                                                                              
+          find "/cloudbees/workspace" -type f | while read file; do                                                                                                               
             echo ""                                                                                                                                                            
             echo "File: $file"                                                                                                                                                    
             # cat "$file"
