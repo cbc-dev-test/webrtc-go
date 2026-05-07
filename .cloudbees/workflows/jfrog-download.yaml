@@ -17,7 +17,7 @@ jobs:
           username: ${{ vars.JFROG_ACTIONS_USERNAME }}
           password: ${{ secrets.JFROG_ACTIONS_PASSWORD }}
           file-path: ${{ cloudbees.workspace }}/download/test-image
-          artifactory-path: artifactory/test-image/1.11
+          artifactory-path: artifactory/test-image/1.11/manifest.json
 
       # Printing policy subject details for testing purpose
       - id: print-download-file
