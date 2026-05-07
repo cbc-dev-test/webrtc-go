@@ -17,7 +17,7 @@ jobs:
 
       - id: jfrog-actions-workflow-upload
         name: jfrog actions workflow upload
-        uses: jfrog-artifactory-upload-file@v1
+        uses: cloudbees-io/jfrog-artifactory-upload-file@v1
         with:
           url: ${{ vars.JFROG_URL }}
           username: ${{ vars.JFROG_ACTIONS_USERNAME }}
