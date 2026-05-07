@@ -37,7 +37,7 @@ jobs:
           url: ${{ vars.JFROG_URL }}
           username: ${{ vars.JFROG_ACTIONS_USERNAME }}
           password: ${{ secrets.JFROG_ACTIONS_PASSWORD }}
-          file-path: ./golang-alpine.tar
+          file-path: /cloudbees/workspace/dockerImage/golang-alpine.tar
           artifactory-path: policy/golang-alpine/golang-alpine.tar
           artifact-name: golang-alpine
           artifact-version: 1.0.0
