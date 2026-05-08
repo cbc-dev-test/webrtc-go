@@ -45,16 +45,16 @@ jobs:
           done
       - id: policy-eval
         name: Policy evaluation
-        uses: cloudbees-io/policy-check@CBP-42797
+        uses: cloudbees-io/policy-check@main
         with:
           policy: 935f59c8-4b21-4051-81b4-0d83d280d60d
           input-data: |
             [{
-            "type": "another_vulnerability_scan",
+            "type": "vulnerability_scan",
             "data": {
               "summary": {
                 "by_severity": {
-                  "total":0,
+                  "total":"string",
                   "critical": 0,
                   "high": 0,
                   "medium": 0,
