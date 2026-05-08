@@ -19,25 +19,12 @@ jobs:
           file-path: /cloudbees/workspace/golang-alpine.tar
           artifactory-path: test-generic-repo/jfrogtest/golang-alpine.tar
 
-      # # Printing policy subject details for testing purpose
-      # - id: print-download-file
-      #   name: Print download file
-      #   uses: docker://alpine:latest
-      #   run: |
-
-      #     echo "=== Files in /cloudbees/workspace ==="                                                                                                                              
-      #     find "/cloudbees/workspace" -type f | while read file; do                                                                                                               
-      #       echo ""                                                                                                                                                            
-      #       echo "File: $file"                                                                                                                                                    
-      #       # cat "$file"
-      #       echo "---"
-      #     done
       - id: trivy-scan
         name: Scan with Trivy
         uses: cloudbees-io/trivy-plugin@v2
         with:
           binary-tar-path: /cloudbees/workspace/golang-alpine.tar
-      
+
       - id: print-trivy-outputs
         name: Print trivy outputs
         uses: docker://alpine:latest
