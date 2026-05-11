@@ -18,7 +18,7 @@ jobs:
         shell: sh
         run: |
           CRITICAL=0
-          HIGH=1
+          HIGH=0
           MEDIUM=0
           LOW=0
           TOTAL=$(( $CRITICAL + $HIGH + $MEDIUM + $LOW ))
@@ -53,7 +53,7 @@ jobs:
           echo "Authorization: Bearer $ACCESS_KEY"
           echo "$POLICY_SUBJECT"
   policy-evaluation:
-    uses: cloudbees-io/policy-check/workflow.yml@CBP-42797
+    uses: cloudbees-io/policy-check/check.yml@CBP-42797
     needs:
       - scan-and-evaluate
     with:
