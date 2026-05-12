@@ -1,0 +1,152 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+name: custom scanner
+on:
+  workflow_dispatch: {}
+permissions:
+  scm-token-own: read
+  scm-token-org: read
+  id-token: write
+jobs:
+  scan-and-evaluate:
+    steps:
+      - name: checkout-source-code
+        uses: cloudbees-io/checkout@v2
+        with:
+          repository: https://github.com/fintech-bank-1/gosec-count
+          path: gosec-count
+
+      - name: Generate Scan Results
+        id: custom-scan-step
+        uses: docker://alpine:latest
+        run: |
+          # Install jq for JSON manipulation
+          apk add --no-cache jq
+
+          # Create directory structure
+          mkdir -p "$CLOUDBEES_WORKSPACE/policy-store/$RUN_ID/policy-subject"
+
+          # Get current timestamp
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          # Get commit SHA and repo path
+          cd gosec-count
+          COMMIT_SHA=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
+          REPO_PATH=$(git config --get remote.origin.url 2>/dev/null || echo "unknown")
+          cd ..
+
+          # Initialize counters
+          CRITICAL_COUNT=0
+          HIGH_COUNT=0
+          MEDIUM_COUNT=0
+          LOW_COUNT=0
+
+          # Array to hold findings
+          FINDINGS_JSON="[]"
+
+          # Example: Scan for vulnerabilities (replace with actual scanning logic)
+          # This is a placeholder - you would integrate actual scanning tools here
+          # For demonstration, we'll create sample findings
+
+          # Simulate finding vulnerabilities
+          # In real scenario, parse output from security scanning tools
+          CRITICAL_COUNT=3
+          HIGH_COUNT=12
+          MEDIUM_COUNT=18
+          LOW_COUNT=9
+
+          # Build findings array dynamically
+          FINDINGS_JSON=$(jq -n '[]')
+
+          # Add sample findings (replace with actual scan results parsing)
+          FINDINGS_JSON=$(echo "$FINDINGS_JSON" | jq '. + [{
+            "code": "CVE-2024-001",
+            "severity": "HIGH",
+            "location": "gosec-count/main.go:45"
+          }]')
+
+          FINDINGS_JSON=$(echo "$FINDINGS_JSON" | jq '. + [{
+            "code": "CVE-2024-002",
+            "severity": "HIGH",
+            "location": "gosec-count/utils/helper.go:12"
+          }]')
+
+          FINDINGS_JSON=$(echo "$FINDINGS_JSON" | jq '. + [{
+            "code": "CWE-79",
+            "severity": "MEDIUM",
+            "location": "gosec-count/handlers/api.go:78"
+          }]')
+
+          # Calculate total
+          TOTAL_COUNT=$((CRITICAL_COUNT + HIGH_COUNT + MEDIUM_COUNT + LOW_COUNT))
+
+          # Build the complete JSON structure
+          OUTPUT_JSON=$(jq -n \
+            --arg type "vulnerability_scan" \
+            --argjson total "$TOTAL_COUNT" \
+            --argjson critical "$CRITICAL_COUNT" \
+            --argjson high "$HIGH_COUNT" \
+            --argjson medium "$MEDIUM_COUNT" \
+            --argjson low "$LOW_COUNT" \
+            --argjson findings "$FINDINGS_JSON" \
+            --arg timestamp "$TIMESTAMP" \
+            --arg commit_sha "$COMMIT_SHA" \
+            --arg repo "$REPO_PATH" \
+            '[{
+              "type": $type,
+              "data": {
+                "summary": {
+                  "by_severity": {
+                    "total": $total,
+                    "critical": $critical,
+                    "high": $high,
+                    "medium": $medium,
+                    "low": $low
+                  }
+                },
+                "finding": $findings
+              },
+              "meta": [
+                {
+                  "tool": "gosec",
+                  "produced_at": $timestamp,
+                  "status": "COMPLETED",
+                  "target": {
+                    "type": "repository",
+                    "commit_sha": $commit_sha,
+                    "repo": $repo
+                  }
+                },
+                {
+                  "tool": "snyk-sast",
+                  "produced_at": $timestamp,
+                  "status": "COMPLETED",
+                  "target": {
+                    "type": "repository",
+                    "commit_sha": $commit_sha,
+                    "repo": $repo
+                  }
+                }
+              ]
+            }]'
+          )
+
+          # Write JSON to file
+          echo "$OUTPUT_JSON" | jq '.' > "$CLOUDBEES_WORKSPACE/policy-store/$RUN_ID/policy-subject/policy-subject.json"
+
+          echo "JSON file created successfully at: $CLOUDBEES_WORKSPACE/policy-store/$RUN_ID/policy-subject/policy-subject.json"
+          echo "Total vulnerabilities found: $TOTAL_COUNT"
+
+      # Printing policy subject details for testing purpose
+      - id: print-policy-subject
+        name: Print Policy subject
+        uses: docker://alpine:latest
+        run: |
+
+          echo "=== Files in /cloudbees/workspace/policy-store ==="
+          find "/cloudbees/workspace/policy-store" -type f | while read file; do
+            echo ""
+            echo "File: $file"
+            cat "$file"
+            echo "---"
+          done
