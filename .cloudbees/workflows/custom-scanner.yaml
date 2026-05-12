@@ -104,7 +104,7 @@ jobs:
                     "low": $low
                   }
                 },
-                "finding": $findings
+                "findings": $findings
               },
               "meta": [
                 {
