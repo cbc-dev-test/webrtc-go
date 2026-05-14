@@ -53,7 +53,7 @@ jobs:
           echo "Authorization: Bearer $ACCESS_KEY"
           echo "$POLICY_SUBJECT"
   policy-evaluation:
-    uses: cloudbees-io/policy-check/check.yml@CBP-42797
+    uses: cloudbees-io/policy-check/workflow.yml@CBP-42797
     needs:
       - scan-and-evaluate
     with:
