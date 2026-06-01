@@ -57,7 +57,6 @@ jobs:
     needs:
       - scan-and-evaluate
     with:
-      policy-id: 5aa56ae9-de50-4d7b-9e0d-3a91e0f40190
       input-data: ${{ needs.scan-and-evaluate.outputs.policy-subject }}
       checkpoint-type: workflow
       checkpoint-position: within
