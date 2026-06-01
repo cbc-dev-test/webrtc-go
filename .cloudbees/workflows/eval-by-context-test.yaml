@@ -9,6 +9,8 @@ permissions:
   id-token: write
 jobs:
   scan-and-evaluate:
+    outputs:
+      policy-subject: ${{ steps.make-input.outputs.policy-subject }}
     steps:
       - id: make-input
         name: Build a test policy subject
@@ -50,10 +52,12 @@ jobs:
           echo "$ORG"
           echo "Authorization: Bearer $ACCESS_KEY"
           echo "$POLICY_SUBJECT"
-
-      - name: Evaluate policy by context
-        uses: cloudbees-io/policy-check/actions/evaluate-policy-context@CBP-46190
-        with:
-          input-data: ${{ steps.make-input.outputs.policy-subject }}
-          checkpoint-type: workflow
-          checkpoint-position: within
+  policy-evaluation:
+    uses: cloudbees-io/policy-utils/evaluate-policy-context/workflow.yml@CBP-46190
+    needs:
+      - scan-and-evaluate
+    with:
+      policy-id: 5aa56ae9-de50-4d7b-9e0d-3a91e0f40190
+      input-data: ${{ needs.scan-and-evaluate.outputs.policy-subject }}
+      checkpoint-type: workflow
+      checkpoint-position: within
