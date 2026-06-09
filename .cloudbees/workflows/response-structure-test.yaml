@@ -1,0 +1,32 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+name: response-structure-test
+on:
+  workflow_dispatch: {}
+permissions:
+  scm-token-own: read
+  scm-token-org: read
+  id-token: write
+jobs:
+  scan-and-evaluate:
+    steps:
+      - id: policy-eval
+        name: Policy evaluation
+        uses: cloudbees-io/policy-check@CBP-46191
+        with:
+          policy: 935f59c8-4b21-4051-81b4-0d83d280d60d
+          input-data: |
+            [{
+            "type": "vulnerability_scan",
+            "data": {
+              "summary": {
+                "by_severity": {
+                  "total": 5,
+                  "critical": 2,
+                  "high": 3,
+                  "medium": 0,
+                  "low": 0
+                }
+              }
+            }
+            }]
