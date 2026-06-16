@@ -58,26 +58,26 @@ jobs:
           echo "Low count: ${{ steps.sonar-step.outputs.low-count }}"
 
 
-      - name: Run Snyk Sast
+      - name: checkout-source-code
+        uses: cloudbees-io/checkout@v1
+
+      - name: Run Snyk SAST Scan
         id: snyk-sast-step
         uses: cloudbees-io/snyk-sast-plugin@CBP-47541
         with:
           snyk-token: ${{ secrets.SNYK_TOKEN }}
           org-id: ${{ vars.SNYK_ORG_ID }}
-          workspace-dir: "webrtc-repo"
-
-      # Printing output for testing purpose
-      - id: print-snyk-sast-output
-        name: Print Snyk sast outputs
+          
+      - id: print-outputs-from-snyk-sast-step
+        name: print outputs from upstream Snyk SAST step
         uses: docker://alpine:latest
         run: |
-          echo "Snyk SAST outputs:"
-          echo "Critical: ${{ steps.snyk-sast-step.outputs.critical-count }}"
-          echo "Very high: ${{ steps.snyk-sast-step.outputs.very-high-count }}"
-          echo "High: ${{ steps.snyk-sast-step.outputs.high-count }}"
-          echo "Medium: ${{ steps.snyk-sast-step.outputs.medium-count }}"
-          echo "Low: ${{ steps.snyk-sast-step.outputs.low-count }}"
-          echo "Policy Subject: ${{ steps.snyk-sast-step.outputs.policy-subject }}"
+          echo "Outputs from upstream Snyk SAST step:"
+          echo "Critical count: ${{ steps.snyk-sast-step.outputs.critical-count }}"
+          echo "Very high count: ${{ steps.snyk-sast-step.outputs.very-high-count }}"
+          echo "High count: ${{ steps.snyk-sast-step.outputs.high-count }}"
+          echo "Medium count: ${{ steps.snyk-sast-step.outputs.medium-count }}"
+          echo "Low count: ${{ steps.snyk-sast-step.outputs.low-count }}"
       
       # Printing policy subject details for testing purpose
       - id: print-policy-subject
