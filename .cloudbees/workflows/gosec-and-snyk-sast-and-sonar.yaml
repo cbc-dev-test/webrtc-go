@@ -35,17 +35,17 @@ jobs:
           echo "Low: ${{ steps.gosec-step.outputs.low-count }}"
           echo "Policy Subject: ${{ steps.gosec-step.outputs.policy-subject }}"
 
-      - name: checkout-source-code-1
-        uses: cloudbees-io/checkout@v2
-        with:
-          repository: https://github.com/Dev-Org-Hari/webrtc-go
-          path: "webrtc-repo"
+      # - name: checkout-source-code-1
+      #   uses: cloudbees-io/checkout@v2
+      #   with:
+      #     repository: https://github.com/Dev-Org-Hari/webrtc-go
+      #     path: "webrtc-repo"
 
       - name: Run Sonar Scan
         id: sonar-step
         uses: cloudbees-io/sonarqube-plugin@CBP-47542
         with:
-          workspace-dir: webrtc-repo
+          workspace-dir: "webrtc-repo"
           url: ${{ vars.SONAR_URL }}
           username: ${{ vars.SONAR_USERNAME }}
           password: ${{ secrets.SONAR_PASSWORD }}
@@ -64,12 +64,16 @@ jobs:
 
 
       - name: checkout-source-code
-        uses: cloudbees-io/checkout@v1
+        uses: cloudbees-io/checkout@v2
+        with:
+          repository: https://github.com/cbc-dev-test/webrtc-go
+          path: "cb-webrtc-repo"
 
       - name: Run Snyk SAST Scan
         id: snyk-sast-step
         uses: cloudbees-io/snyk-sast-plugin@CBP-47541
         with:
+          workspace-dir: "cb-webrtc-repo"
           snyk-token: ${{ secrets.SNYK_TOKEN }}
           org-id: ${{ vars.SNYK_ORG_ID }}
           
@@ -83,7 +87,7 @@ jobs:
           echo "High count: ${{ steps.snyk-sast-step.outputs.high-count }}"
           echo "Medium count: ${{ steps.snyk-sast-step.outputs.medium-count }}"
           echo "Low count: ${{ steps.snyk-sast-step.outputs.low-count }}"
-          echo "Policy Subject: ${{ steps.gosec-step.outputs.policy-subject }}"
+          echo "Policy Subject: ${{ steps.snyk-sast-step.outputs.policy-subject }}"
       
       # Printing policy subject details for testing purpose
       - id: print-policy-subject
