@@ -56,6 +56,7 @@ jobs:
           echo "High count: ${{ steps.sonar-step.outputs.high-count }}"
           echo "Medium count: ${{ steps.sonar-step.outputs.medium-count }}"
           echo "Low count: ${{ steps.sonar-step.outputs.low-count }}"
+          echo "Policy Subject: ${{ steps.gosec-step.outputs.policy-subject }}"
 
 
       - name: checkout-source-code
@@ -78,6 +79,7 @@ jobs:
           echo "High count: ${{ steps.snyk-sast-step.outputs.high-count }}"
           echo "Medium count: ${{ steps.snyk-sast-step.outputs.medium-count }}"
           echo "Low count: ${{ steps.snyk-sast-step.outputs.low-count }}"
+          echo "Policy Subject: ${{ steps.gosec-step.outputs.policy-subject }}"
       
       # Printing policy subject details for testing purpose
       - id: print-policy-subject
