@@ -38,13 +38,14 @@ jobs:
       - name: checkout-source-code-1
         uses: cloudbees-io/checkout@v2
         with:
-          repository: https://github.com/fintech-bank-1/gosec-count
-          path: gosec-count
+          repository: https://github.com/Dev-Org-Hari/webrtc-go
+          path: "webrtc-repo"
 
       - name: Run Sonar Scan
         id: sonar-step
         uses: cloudbees-io/sonarqube-plugin@CBP-47542
         with:
+          workspace-dir: webrtc-repo
           url: ${{ vars.SONAR_URL }}
           username: ${{ vars.SONAR_USERNAME }}
           password: ${{ secrets.SONAR_PASSWORD }}
