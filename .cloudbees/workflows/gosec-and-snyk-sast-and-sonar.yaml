@@ -35,8 +35,11 @@ jobs:
           echo "Low: ${{ steps.gosec-step.outputs.low-count }}"
           echo "Policy Subject: ${{ steps.gosec-step.outputs.policy-subject }}"
 
-      - name: Checkout Source Code
-        uses: cloudbees-io/checkout@v1
+      - name: checkout-source-code-1
+        uses: cloudbees-io/checkout@v2
+        with:
+          repository: https://github.com/fintech-bank-1/gosec-count
+          path: gosec-count
 
       - name: Run Sonar Scan
         id: sonar-step
@@ -46,17 +49,17 @@ jobs:
           username: ${{ vars.SONAR_USERNAME }}
           password: ${{ secrets.SONAR_PASSWORD }}
                  
-      - id: print-outputs-from-sonar-step
-        name: Print Outputs From Upstream Sonar Step
+      - id: print-sonar-outputs-1
+        name: Print-sonar-outputs-1
         uses: docker://alpine:latest
         run: |
           echo "Outputs from upstream Sonar step:"
-          echo "Critical count: ${{ steps.sonar-step.outputs.critical-count }}"
-          echo "Very high count: ${{ steps.sonar-step.outputs.very-high-count }}"
-          echo "High count: ${{ steps.sonar-step.outputs.high-count }}"
-          echo "Medium count: ${{ steps.sonar-step.outputs.medium-count }}"
-          echo "Low count: ${{ steps.sonar-step.outputs.low-count }}"
-          echo "Policy Subject: ${{ steps.gosec-step.outputs.policy-subject }}"
+          echo "Critical count: ${{ steps.sonarqube-step.outputs.critical-count }}"
+          echo "Very high count: ${{ steps.sonarqube-step.outputs.very-high-count }}"
+          echo "High count: ${{ steps.sonarqube-step.outputs.high-count }}"
+          echo "Medium count: ${{ steps.sonarqube-step.outputs.medium-count }}"
+          echo "Low count: ${{ steps.sonarqube-step.outputs.low-count }}"
+          echo "Policy Subject: ${{ steps.sonarqube-step.outputs.policy-subject }}"
 
 
       - name: checkout-source-code
