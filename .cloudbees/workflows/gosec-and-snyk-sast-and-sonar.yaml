@@ -64,7 +64,7 @@ jobs:
         with:
           snyk-token: ${{ secrets.SNYK_TOKEN }}
           org-id: ${{ vars.SNYK_ORG_ID }}
-          workspace-dir: gosec-count
+          workspace-dir: "webrtc-repo"
 
       # Printing output for testing purpose
       - id: print-snyk-sast-output
