@@ -1,0 +1,54 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+name: checkmarxone sast
+on:
+  workflow_dispatch: {}
+permissions:
+  scm-token-own: read
+  scm-token-org: read
+  id-token: write
+jobs:
+  scan-and-evaluate:
+    steps:
+
+      - name: checkout-source-code
+        uses: cloudbees-io/checkout@v1
+        with:
+          repository: https://github.com/fintech-bank-1/gosec-count
+          path: gosec-count
+
+      - name: Run CheckmarxOne Sast
+        id: checkmarxone-sast-step
+        uses: cloudbees-io/checkmarxone-sast-plugin@CBP-47541
+        with:
+          api-key: ${{ secrets.CHECKMARXONE_API_KEY }}
+          url: ${{ vars.CHECKMARXONE_BASE_URL }}
+          tenant: ${{ vars.CHECKMARXONE_TENANT }}
+          workspace-dir: gosec-count
+
+      # Printing output for testing purpose
+      - id: print-checkmarxone-sast-output
+        name: Print checkmarxone sast outputs
+        uses: docker://alpine:latest
+        run: |
+          echo "checkmarxone SAST outputs:"
+          echo "Critical: ${{ steps.checkmarxone-sast-step.outputs.critical-count }}"
+          echo "Very high: ${{ steps.checkmarxone-sast-step.outputs.very-high-count }}"
+          echo "High: ${{ steps.checkmarxone-sast-step.outputs.high-count }}"
+          echo "Medium: ${{ steps.checkmarxone-sast-step.outputs.medium-count }}"
+          echo "Low: ${{ steps.checkmarxone-sast-step.outputs.low-count }}"
+          echo "Policy Subject: ${{ steps.checkmarxone-sast-step.outputs.policy-subject }}"
+      
+      # Printing policy subject details for testing purpose
+      - id: print-policy-subject
+        name: Print Policy subject
+        uses: docker://alpine:latest
+        run: |
+
+          echo "=== Files in /cloudbees/workspace/policy-store ==="                                                                                                                              
+          find "/cloudbees/workspace/policy-store" -type f | while read file; do                                                                                                               
+            echo ""                                                                                                                                                               
+            echo "File: $file"                                                                                                                                                    
+            cat "$file"                                                                                                                                                           
+            echo "---"                                                                                                                                                            
+          done
