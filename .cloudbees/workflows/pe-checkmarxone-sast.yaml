@@ -19,7 +19,7 @@ jobs:
 
       - name: Run CheckmarxOne Sast
         id: checkmarxone-sast-step
-        uses: cloudbees-io/checkmarxone-sast-plugin@CBP-47541
+        uses: cloudbees-io/checkmarxone-sast-plugin@CBP-47542
         with:
           api-key: ${{ secrets.CHECKMARXONE_API_KEY }}
           url: ${{ vars.CHECKMARXONE_BASE_URL }}
