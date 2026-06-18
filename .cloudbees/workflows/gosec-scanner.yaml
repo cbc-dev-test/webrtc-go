@@ -11,11 +11,15 @@ jobs:
   scan-and-evaluate:
     steps:
       - name: checkout-source-code
-        uses: cloudbees-io/checkout@v1
+        uses: cloudbees-io/checkout@v2
+        with:
+          path: "webrtc-repo"
 
       - name: Run Gosec Scan
         id: gosec-step
         uses: cloudbees-io/gosec-plugin@v1
+        with:
+            workspace-dir: "webrtc-repo"
 
       - id: print-gosec-outputs
         name: Print gosec outputs
