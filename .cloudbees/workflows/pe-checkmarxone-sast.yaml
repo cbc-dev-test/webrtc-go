@@ -1,6 +1,6 @@
 apiVersion: automation.cloudbees.io/v1alpha1
 kind: workflow
-name: checkmarxone sast
+name: checkmarxone-scanner
 on:
   workflow_dispatch: {}
 permissions:
@@ -10,35 +10,30 @@ permissions:
 jobs:
   scan-and-evaluate:
     steps:
-
       - name: checkout-source-code
-        uses: cloudbees-io/checkout@v1
+        uses: cloudbees-io/checkout@v2
         with:
-          repository: https://github.com/fintech-bank-1/gosec-count
-          path: gosec-count
+          path: "webrtc-repo"
 
-      - name: Run CheckmarxOne Sast
-        id: checkmarxone-sast-step
+      - name: Run Gosec Scan
+        id: gosec-step
         uses: cloudbees-io/checkmarxone-sast-plugin@v1
         with:
-          api-key: ${{ secrets.CHECKMARXONE_API_KEY }}
-          url: ${{ vars.CHECKMARXONE_BASE_URL }}
-          tenant: ${{ vars.CHECKMARXONE_TENANT }}
-          workspace-dir: gosec-count
+            workspace-dir: "webrtc-repo"
 
-      # Printing output for testing purpose
-      - id: print-checkmarxone-sast-output
-        name: Print checkmarxone sast outputs
+      - id: print-checkmarxone-outputs
+        name: Print checkmarxone outputs
         uses: docker://alpine:latest
         run: |
-          echo "checkmarxone SAST outputs:"
-          echo "Critical: ${{ steps.checkmarxone-sast-step.outputs.critical-count }}"
-          echo "Very high: ${{ steps.checkmarxone-sast-step.outputs.very-high-count }}"
-          echo "High: ${{ steps.checkmarxone-sast-step.outputs.high-count }}"
-          echo "Medium: ${{ steps.checkmarxone-sast-step.outputs.medium-count }}"
-          echo "Low: ${{ steps.checkmarxone-sast-step.outputs.low-count }}"
-          echo "Policy Subject: ${{ steps.checkmarxone-sast-step.outputs.policy-subject }}"
-      
+          echo "Gosec outputs:"
+          echo "Critical: ${{ steps.checkmarxone-step.outputs.critical-count }}"
+          echo "Very high: ${{ steps.checkmarxone-step.outputs.very-high-count }}"
+          echo "High: ${{ steps.checkmarxone-step.outputs.high-count }}"
+          echo "Medium: ${{ steps.checkmarxone-step.outputs.medium-count }}"
+          echo "Low: ${{ steps.checkmarxone-step.outputs.low-count }}"
+          echo "Policy Subject: ${{ steps.checkmarxone-step.outputs.policy-subject }}"
+          echo "CLOUDBEES_OUTPUTS directory: $CLOUDBEES_OUTPUTS"
+
       # Printing policy subject details for testing purpose
       - id: print-policy-subject
         name: Print Policy subject
