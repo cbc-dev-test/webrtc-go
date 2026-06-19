@@ -53,4 +53,4 @@ jobs:
         uses: cloudbees-io/policy-check@v1
         with:
           policy: 0dc6dd18-9205-4343-a300-b25ec0cce570
-          input-data: ${{ steps.snyk-sast-step.outputs.policy-subject }}
+          input-data: ${{ steps.gosec-step.outputs.policy-subject }}
