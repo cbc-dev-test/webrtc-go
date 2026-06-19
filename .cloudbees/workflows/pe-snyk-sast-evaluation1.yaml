@@ -54,7 +54,7 @@ jobs:
 
       - name: Run policy check
         id: policy-check
-        uses: cloudbees-io/policy-check@v1.0.1
+        uses: cloudbees-io/policy-check@v1
         with:
           policy: fcfe43c5-021f-46d8-826a-4267b1123200
           input-data: ${{ steps.snyk-sast-step.outputs.policy-subject }}
