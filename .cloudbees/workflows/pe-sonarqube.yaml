@@ -18,7 +18,7 @@ jobs:
 
       - name: Run Sonar Scan
         id: sonar-step
-        uses: cloudbees-io/sonarqube-plugin@CBP-47542
+        uses: cloudbees-io/sonarqube-plugin@v1
         with:
           workspace-dir: "webrtc-repo"
           url: ${{ vars.SONAR_URL }}
