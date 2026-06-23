@@ -1,0 +1,95 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+name: pe-snyksast-trivy
+on:
+  workflow_dispatch: {}
+permissions:
+  scm-token-own: read
+  scm-token-org: read
+  id-token: write
+jobs:
+  scan-and-evaluate:
+    steps:
+
+      - name: checkout-source-code
+        uses: cloudbees-io/checkout@v1
+        with:
+          repository: https://github.com/fintech-bank-1/gosec-count
+          path: gosec-count
+
+      - name: Run Snyk Sast
+        id: snyk-sast-step
+        uses: cloudbees-io/snyk-sast-plugin@v1
+        with:
+          snyk-token: ${{ secrets.SNYK_TOKEN }}
+          org-id: ${{ vars.SNYK_ORG_ID }}
+          workspace-dir: gosec-count
+
+      # Printing output for testing purpose
+      - id: print-snyk-sast-output
+        name: Print Snyk sast outputs
+        uses: docker://alpine:latest
+        run: |
+          echo "Snyk SAST outputs:"
+          echo "Critical: ${{ steps.snyk-sast-step.outputs.critical-count }}"
+          echo "Very high: ${{ steps.snyk-sast-step.outputs.very-high-count }}"
+          echo "High: ${{ steps.snyk-sast-step.outputs.high-count }}"
+          echo "Medium: ${{ steps.snyk-sast-step.outputs.medium-count }}"
+          echo "Low: ${{ steps.snyk-sast-step.outputs.low-count }}"
+          echo "Policy Subject: ${{ steps.snyk-sast-step.outputs.policy-subject }}"
+      
+      # Printing policy subject details for testing purpose
+      - id: print-policy-subject
+        name: Print Policy subject
+        uses: docker://alpine:latest
+        run: |
+
+          echo "=== Files in /cloudbees/workspace/policy-store ==="                                                                                                                              
+          find "/cloudbees/workspace/policy-store" -type f | while read file; do                                                                                                               
+            echo ""                                                                                                                                                               
+            echo "File: $file"                                                                                                                                                    
+            cat "$file"                                                                                                                                                           
+            echo "---"                                                                                                                                                            
+          done
+
+      - name: jfrog-actions-workflow-download
+        uses: cloudbees-io/jfrog-artifactory-download-file@v1
+        with:
+          url: ${{ vars.JFROG_URL }}
+          username: ${{ vars.JFROG_ACTIONS_USERNAME }}
+          password: ${{ secrets.JFROG_ACTIONS_PASSWORD }}
+          file-path: /cloudbees/workspace/golang-alpine.tar
+          artifactory-path: test-generic-repo/jfrogtest/golang-alpine.tar
+
+      - id: trivy-scan
+        name: Scan with Trivy
+        uses: cloudbees-io/trivy-plugin@v1
+        with:
+          binary-tar-path: /cloudbees/workspace/golang-alpine.tar
+
+      - id: print-trivy-outputs
+        name: Print trivy outputs
+        uses: docker://alpine:latest
+        run: |
+          echo "Trivy outputs:"
+          echo "Critical: ${{ steps.trivy-scan.outputs.critical-count }}"
+          echo "Very high: ${{ steps.trivy-scan.outputs.very-high-count }}"
+          echo "High: ${{ steps.trivy-scan.outputs.high-count }}"
+          echo "Medium: ${{ steps.trivy-scan.outputs.medium-count }}"
+          echo "Low: ${{ steps.trivy-scan.outputs.low-count }}"
+          echo "Policy Subject: ${{ steps.trivy-scan.outputs.policy-subject }}"
+          echo "CLOUDBEES_OUTPUTS directory: $CLOUDBEES_OUTPUTS"
+  
+  # Printing policy subject details for testing purpose
+      - id: print-policy-subject
+        name: Print Policy subject
+        uses: docker://alpine:latest
+        run: |
+
+          echo "=== Files in /cloudbees/workspace/policy-store ==="                                                                                                                              
+          find "/cloudbees/workspace/policy-store" -type f | while read file; do                                                                                                               
+            echo ""                                                                                                                                                               
+            echo "File: $file"                                                                                                                                                    
+            cat "$file"                                                                                                                                                           
+            echo "---"                                                                                                                                                            
+          done
