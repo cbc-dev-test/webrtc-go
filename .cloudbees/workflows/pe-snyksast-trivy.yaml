@@ -42,8 +42,7 @@ jobs:
         uses: cloudbees-io/jfrog-artifactory-download-file@v1
         with:
           url: ${{ vars.JFROG_URL }}
-          username: ${{ vars.JFROG_ACTIONS_USERNAME }}
-          password: ${{ secrets.JFROG_ACTIONS_PASSWORD }}
+          token: ${{ secrets.JFROG_ACTIONS_TOKEN }}
           file-path: /cloudbees/workspace/golang-alpine.tar
           artifactory-path: test-generic-repo/jfrogtest/golang-alpine.tar
 
