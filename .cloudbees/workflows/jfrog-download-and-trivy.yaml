@@ -21,7 +21,7 @@ jobs:
 
       - id: trivy-scan
         name: Scan with Trivy
-        uses: cloudbees-io/trivy-plugin@v2
+        uses: cloudbees-io/trivy-plugin@CBP-48903
         with:
           binary-tar-path: /cloudbees/workspace/golang-alpine.tar
 
@@ -35,3 +35,11 @@ jobs:
           echo "High: ${{ steps.trivy-scan.outputs.high-count }}"
           echo "Medium: ${{ steps.trivy-scan.outputs.medium-count }}"
           echo "Low: ${{ steps.trivy-scan.outputs.low-count }}"
+          echo "Policy Subject: ${{ steps.trivy-scan.outputs.policy-subject }}"
+
+      - name: Run policy check
+        id: policy-check
+        uses: cloudbees-io/policy-check@v1
+        with:
+         policy: dff97f6f-32df-46a5-8c1f-d1d832773a42
+         input-data: ${{ steps.trivy-scan.outputs.policy-subject }}
