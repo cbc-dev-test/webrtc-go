@@ -57,4 +57,4 @@ jobs:
         uses: cloudbees-io/policy-check@v1
         with:
           policy: 7a981d4f-ec1f-4328-9967-a89217316220
-          input-data: ${{ steps.gosec-step.outputs.policy-subject }}  
+          input-data: ${{ steps.trivy-scan.outputs.policy-subject }}  
