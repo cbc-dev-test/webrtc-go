@@ -23,7 +23,7 @@ jobs:
         name: Scan with Trivy
         uses: cloudbees-io/trivy-plugin@v1
         with:
-          binary-tar-path: /cloudbees/workspace/golang-alpine/runs.tar
+          binary-tar-path: /cloudbees/workspace/golang-alpine.tar
 
       - id: print-trivy-outputs
         name: Print trivy outputs
