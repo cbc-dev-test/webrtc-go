@@ -1,0 +1,45 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+name: jfrog download and grype
+on:
+  workflow_dispatch: {}
+permissions:
+  scm-token-own: read
+  scm-token-org: read
+  id-token: write
+jobs:
+  download-and-evaluate:
+    steps:
+      - name: jfrog-actions-workflow-download
+        uses: cloudbees-io/jfrog-artifactory-download-file@v1
+        with:
+          url: ${{ vars.PE_JFROG_URL }}
+          username: ${{ vars.PE_JFROG_ACTIONS_USERNAME }}
+          password: ${{ secrets.PE_JFROG_ACTIONS_PASSWORD }}
+          file-path: /cloudbees/workspace/golang-alpine.tar
+          artifactory-path: test-generic-repo/jfrogtest/golang-alpine.tar
+
+      - id: grype-scan
+        name: Scan with Grype
+        uses: cloudbees-io/grype-plugin@v1
+        with:
+          binary-tar-path: /cloudbees/workspace/golang-alpine.tar
+
+      - id: print-grype-outputs
+        name: Print grype outputs
+        uses: docker://alpine:latest
+        run: |
+          echo "Grype outputs:"
+          echo "Critical: ${{ steps.grype-scan.outputs.critical-count }}"
+          echo "Very high: ${{ steps.grype-scan.outputs.very-high-count }}"
+          echo "High: ${{ steps.grype-scan.outputs.high-count }}"
+          echo "Medium: ${{ steps.grype-scan.outputs.medium-count }}"
+          echo "Low: ${{ steps.grype-scan.outputs.low-count }}"
+          echo "Policy Subject: ${{ steps.grype-scan.outputs.policy-subject }}"
+
+      - name: Run policy check
+        id: policy-check
+        uses: cloudbees-io/policy-check@v1
+        with:
+         policy: 675e7ee7-8f72-4961-8792-eca1d5b01237
+         input-data: ${{ steps.grype-scan.outputs.policy-subject }}
