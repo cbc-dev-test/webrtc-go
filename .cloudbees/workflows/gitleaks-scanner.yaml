@@ -17,7 +17,7 @@ jobs:
 
       - name: Run gitleaks Scan
         id: gitleaks-step
-        uses: cloudbees-io/gitleaks-plugin@CBP-50810
+        uses: cloudbees-io/gitleaks-plugin@CBP-50809
         with:
             workspace-dir: "webrtc-repo"
 
