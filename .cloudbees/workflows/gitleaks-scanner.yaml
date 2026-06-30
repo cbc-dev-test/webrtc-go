@@ -53,4 +53,4 @@ jobs:
         uses: cloudbees-io/policy-check@v1
         with:
           policy: b627351c-0f00-4c1f-8e74-f54def40d192
-          input-data: ${{ steps.snyk-sast-step.outputs.policy-subject }}
+          input-data: ${{ steps.gitleaks-step.outputs.policy-subject }}
