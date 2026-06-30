@@ -47,3 +47,10 @@ jobs:
             cat "$file"                                                                                                                                                           
             echo "---"                                                                                                                                                            
           done
+
+      - name: Run policy check
+        id: policy-check
+        uses: cloudbees-io/policy-check@v1
+        with:
+          policy: b627351c-0f00-4c1f-8e74-f54def40d192
+          input-data: ${{ steps.snyk-sast-step.outputs.policy-subject }}
