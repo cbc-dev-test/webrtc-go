@@ -52,5 +52,5 @@ jobs:
         id: policy-check
         uses: cloudbees-io/policy-check@v1
         with:
-          policy: b627351c-0f00-4c1f-8e74-f54def40d192
+          policy: 257422b9-4dff-4f19-9e69-9eab1b5c0895
           input-data: ${{ steps.gitleaks-step.outputs.policy-subject }}
