@@ -50,13 +50,6 @@ jobs:
             echo "---"                                                                                                                                                            
           done
 
-      - name: Run policy check
-        id: policy-check
-        uses: cloudbees-io/policy-check@v1
-        with:
-          policy: 257422b9-4dff-4f19-9e69-9eab1b5c0895
-          input-data: ${{ steps.gitleaks-step.outputs.policy-subject }}
-
   policy-evaluation:
     uses: cloudbees-io/policy-utils/evaluate-policy-context/workflow.yml@v2
     needs:
