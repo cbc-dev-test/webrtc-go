@@ -1,0 +1,67 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+name: pe-evalbycontext-gitleaks
+on:
+  workflow_dispatch: {}
+permissions:
+  scm-token-own: read
+  scm-token-org: read
+  id-token: write
+jobs:
+  scan-and-evaluate:
+    outputs:
+      policy-subject: ${{ steps.snyk-sast-step.outputs.policy-subject }}
+    steps:
+      - name: checkout-source-code
+        uses: cloudbees-io/checkout@v2
+        with:
+          path: "webrtc-repo"
+
+      - name: Run gitleaks Scan
+        id: gitleaks-step
+        uses: cloudbees-io/gitleaks-plugin@v1
+        with:
+            workspace-dir: "webrtc-repo"
+
+      - id: print-gitleaks-outputs
+        name: Print gitleaks outputs
+        uses: docker://alpine:latest
+        run: |
+          echo "Gosec outputs:"
+          echo "Critical: ${{ steps.gitleaks-step.outputs.critical-count }}"
+          echo "Very high: ${{ steps.gitleaks-step.outputs.very-high-count }}"
+          echo "High: ${{ steps.gitleaks-step.outputs.high-count }}"
+          echo "Medium: ${{ steps.gitleaks-step.outputs.medium-count }}"
+          echo "Low: ${{ steps.gitleaks-step.outputs.low-count }}"
+          echo "Policy Subject: ${{ steps.gitleaks-step.outputs.policy-subject }}"
+          echo "CLOUDBEES_OUTPUTS directory: $CLOUDBEES_OUTPUTS"
+
+      # Printing policy subject details for testing purpose
+      - id: print-policy-subject
+        name: Print Policy subject
+        uses: docker://alpine:latest
+        run: |
+
+          echo "=== Files in /cloudbees/workspace/policy-store ==="                                                                                                                              
+          find "/cloudbees/workspace/policy-store" -type f | while read file; do                                                                                                               
+            echo ""                                                                                                                                                               
+            echo "File: $file"                                                                                                                                                    
+            cat "$file"                                                                                                                                                           
+            echo "---"                                                                                                                                                            
+          done
+
+      - name: Run policy check
+        id: policy-check
+        uses: cloudbees-io/policy-check@v1
+        with:
+          policy: 257422b9-4dff-4f19-9e69-9eab1b5c0895
+          input-data: ${{ steps.gitleaks-step.outputs.policy-subject }}
+
+  policy-evaluation:
+    uses: cloudbees-io/policy-utils/evaluate-policy-context/workflow.yml@v2
+    needs:
+    - scan-and-evaluate
+    with:
+      input-data: ${{ needs.scan-and-evaluate.outputs.policy-subject }}
+      checkpoint-type: workflow
+      checkpoint-position: within        
