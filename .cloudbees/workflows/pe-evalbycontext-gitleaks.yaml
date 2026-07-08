@@ -10,7 +10,7 @@ permissions:
 jobs:
   scan-and-evaluate:
     outputs:
-      policy-subject: ${{ steps.snyk-sast-step.outputs.policy-subject }}
+      policy-subject: ${{ steps.gitleaks-step.outputs.policy-subject }}
     steps:
       - name: checkout-source-code
         uses: cloudbees-io/checkout@v2
